@@ -452,30 +452,72 @@ function loadMateriales() {
 }
 
 function renderMateriales(list) {
+
   const el = document.getElementById('matList');
-  document.getElementById('loadSpinner').style.display = 'none';
-  listaActiva = list; // guardar referencia a lo que se muestra
+
+  // Evitar error si ya no existe spinner
+  const spinner = document.getElementById('loadSpinner');
+  if (spinner) {
+    spinner.style.display = 'none';
+  }
+
+  listaActiva = list;
+
   if (!list.length) {
-    el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text2)">Sin resultados</div>';
+    el.innerHTML = `
+      <div style="text-align:center;padding:30px;color:var(--text2)">
+        Sin resultados
+      </div>
+    `;
     return;
   }
+
   el.innerHTML = list.map((m, i) => {
-    const st = m.metros <= m.minimo * 0.5 ? 'stock-crit' :
-               m.metros <= m.minimo ? 'stock-low' : 'stock-ok';
-    const stTxt = m.metros <= m.minimo * 0.5 ? '🔴 Crítico' :
-                  m.metros <= m.minimo ? '🟡 Bajo' : '🟢 OK';
-    // Construir etiqueta de medidas
+
+    const st =
+      m.metros <= m.minimo * 0.5
+        ? 'stock-crit'
+        : m.metros <= m.minimo
+        ? 'stock-low'
+        : 'stock-ok';
+
+    const stTxt =
+      m.metros <= m.minimo * 0.5
+        ? '🔴 Crítico'
+        : m.metros <= m.minimo
+        ? '🟡 Bajo'
+        : '🟢 OK';
+
     let medidaLabel = m.medida || '';
-    if (m.espesor) medidaLabel += ' x ' + m.espesor;
+
+    if (m.espesor) {
+      medidaLabel += ' x ' + m.espesor;
+    }
+
     return `
-    <div class="mat-item" id="mat${i}" onclick="selectMat(${i})">
-      <div class="mat-icon">${matIcon(m.tipo)}</div>
-      <div class="mat-info">
-        <div class="mat-name">${m.material}${medidaLabel ? ' · ' + medidaLabel : ''}</div>
-        <div class="mat-detail">${m.tipo || ''} · ${m.piezas} pzas · ${m.metros} mtr</div>
+      <div class="mat-item" id="mat${i}" onclick="selectMat(${i})">
+        
+        <div class="mat-icon">
+          ${matIcon(m.tipo)}
+        </div>
+
+        <div class="mat-info">
+          <div class="mat-name">
+            ${m.material}${medidaLabel ? ' · ' + medidaLabel : ''}
+          </div>
+
+          <div class="mat-detail">
+            ${m.tipo || ''} · ${m.piezas} pzas · ${m.metros} mtr
+          </div>
+        </div>
+
+        <div class="mat-stock ${st}">
+          ${stTxt}
+        </div>
+
       </div>
-      <div class="mat-stock ${st}">${stTxt}</div>
-    </div>`;
+    `;
+
   }).join('');
 }
 
