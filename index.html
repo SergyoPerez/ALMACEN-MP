@@ -411,11 +411,11 @@
 // ═══════════════════════════════════════════════════════════
 //  CONFIGURACIÓN — Cambia esta URL por la de tu Apps Script
 // ═══════════════════════════════════════════════════════════
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-tL4i1F0zWnp0Mafa35viszYgcx12_1dBZ3H6PNWtsKzO9CQK8SdHvAQP9g9lUdbH/exec";
+const SCRIPT_URL = "PEGA_AQUÍ_LA_URL_DE_TU_APPS_SCRIPT";
 // ═══════════════════════════════════════════════════════════
 
 let materiales = [];
-let materialesFiltrados = [];
+let listaActiva = []; // siempre refleja lo que se ve en pantalla
 let selMat = null;
 let currentStep = 1;
 
@@ -451,8 +451,9 @@ function loadMateriales() {
 function renderMateriales(list) {
   const el = document.getElementById('matList');
   document.getElementById('loadSpinner').style.display = 'none';
+  listaActiva = list; // guardar referencia a lo que se muestra
   if (!list.length) {
-    el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text2)">Sin materiales en inventario</div>';
+    el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text2)">Sin resultados</div>';
     return;
   }
   el.innerHTML = list.map((m, i) => {
@@ -460,11 +461,14 @@ function renderMateriales(list) {
                m.metros <= m.minimo ? 'stock-low' : 'stock-ok';
     const stTxt = m.metros <= m.minimo * 0.5 ? '🔴 Crítico' :
                   m.metros <= m.minimo ? '🟡 Bajo' : '🟢 OK';
+    // Construir etiqueta de medidas
+    let medidaLabel = m.medida || '';
+    if (m.espesor) medidaLabel += ' x ' + m.espesor;
     return `
     <div class="mat-item" id="mat${i}" onclick="selectMat(${i})">
       <div class="mat-icon">${matIcon(m.tipo)}</div>
       <div class="mat-info">
-        <div class="mat-name">${m.material} ${m.medida || ''}</div>
+        <div class="mat-name">${m.material}${medidaLabel ? ' · ' + medidaLabel : ''}</div>
         <div class="mat-detail">${m.tipo || ''} · ${m.piezas} pzas · ${m.metros} mtr</div>
       </div>
       <div class="mat-stock ${st}">${stTxt}</div>
@@ -473,17 +477,15 @@ function renderMateriales(list) {
 }
 
 function filterMateriales() {
-  const q = document.getElementById('searchMat').value.toLowerCase();
+  const q = document.getElementById('searchMat').value.toLowerCase().trim();
   const filtered = q ? materiales.filter(m =>
-    (m.material+' '+m.tipo+' '+m.medida).toLowerCase().includes(q)
+    (m.material+' '+m.tipo+' '+(m.medida||'')).toLowerCase().includes(q)
   ) : materiales;
   renderMateriales(filtered);
-  materialesFiltrados = filtered;
 }
 
 function selectMat(idx) {
-  const list = materialesFiltrados.length ? materialesFiltrados : materiales;
-  selMat = list[idx];
+  selMat = listaActiva[idx];
   document.querySelectorAll('.mat-item').forEach(el => el.classList.remove('selected'));
   document.getElementById('mat'+idx).classList.add('selected');
   setTimeout(() => goStep3(), 200);
@@ -658,7 +660,7 @@ function resetForm() {
   document.getElementById('motivo').value = '';
   document.getElementById('searchMat').value = '';
   selMat = null;
-  materialesFiltrados = [];
+  listaActiva = [];
   materiales = [];
   setStep(1);
 }
