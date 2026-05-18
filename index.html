@@ -345,7 +345,7 @@
     <div class="card-title">¿Qué material retiras?</div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
-      <input type="text" id="searchMat" placeholder="Buscar material..." oninput="filterMateriales()" autocomplete="off">
+      <input type="text" id="searchMat" placeholder="Buscar material..." oninput="filterMateriales()" onkeyup="filterMateriales()" autocomplete="off" autocorrect="off" autocapitalize="off">
     </div>
     <div class="mat-list" id="matList">
       <div style="text-align:center; padding:30px; color:var(--text2);">
@@ -479,7 +479,7 @@ function renderMateriales(list) {
 function filterMateriales() {
   const q = document.getElementById('searchMat').value.toLowerCase().trim();
   const filtered = q ? materiales.filter(m =>
-    (m.material+' '+m.tipo+' '+(m.medida||'')).toLowerCase().includes(q)
+    (m.material+' '+m.tipo+' '+(m.medida||'')+' '+(m.espesor||'')).toLowerCase().includes(q)
   ) : materiales;
   renderMateriales(filtered);
 }
