@@ -343,9 +343,12 @@
     <div class="back-link" onclick="goBack(1)">← Volver</div>
     <div class="card-label">Paso 2 de 4</div>
     <div class="card-title">¿Qué material retiras?</div>
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="searchMat" placeholder="Buscar material..." oninput="filterMateriales()" onkeyup="filterMateriales()" autocomplete="off" autocorrect="off" autocapitalize="off">
+    <div class="search-wrap" style="display:flex; gap:8px; margin-bottom:12px;">
+      <div style="position:relative; flex:1;">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchMat" placeholder="Buscar material..." autocomplete="off" autocorrect="off" autocapitalize="off" style="padding-left:40px; width:100%;">
+      </div>
+      <button onclick="filterMateriales()" style="background:var(--accent);border:none;border-radius:var(--radius-sm);color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;padding:0 16px;cursor:pointer;flex-shrink:0;">Buscar</button>
     </div>
     <div class="mat-list" id="matList">
       <div style="text-align:center; padding:30px; color:var(--text2);">
