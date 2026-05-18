@@ -480,11 +480,37 @@ function renderMateriales(list) {
 }
 
 function filterMateriales() {
-  const q = document.getElementById('searchMat').value.toLowerCase().trim();
-  const filtered = q ? materiales.filter(m =>
-    (m.material+' '+m.tipo+' '+(m.medida||'')+' '+(m.espesor||'')).toLowerCase().includes(q)
-  ) : materiales;
+
+  const q = document
+    .getElementById('searchMat')
+    .value
+    .toLowerCase()
+    .trim();
+
+  // Mostrar todos si está vacío
+  if (q === '') {
+    renderMateriales(materiales);
+    return;
+  }
+
+  const filtered = materiales.filter(m => {
+
+    const texto = (
+      (m.material || '') + ' ' +
+      (m.tipo || '') + ' ' +
+      (m.medida || '') + ' ' +
+      (m.espesor || '')
+    )
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+
+    return texto.includes(q);
+
+  });
+
   renderMateriales(filtered);
+
 }
 
 function selectMat(idx) {
@@ -553,8 +579,18 @@ function updateAlerta() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('cantidad').addEventListener('input', updateAlerta);
-  document.getElementById('unidad').addEventListener('change', updateAlerta);
+
+  // Actualizar alertas
+  document.getElementById('cantidad')
+    .addEventListener('input', updateAlerta);
+
+  document.getElementById('unidad')
+    .addEventListener('change', updateAlerta);
+
+  // BUSCADOR EN TIEMPO REAL
+  document.getElementById('searchMat')
+    .addEventListener('input', filterMateriales);
+
 });
 
 function toMetros(cant, unidad) {
