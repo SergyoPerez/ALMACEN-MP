@@ -481,36 +481,38 @@ function renderMateriales(list) {
 
 function filterMateriales() {
 
-  const q = document
+  const textoBusqueda = document
     .getElementById('searchMat')
     .value
     .toLowerCase()
     .trim();
 
-  // Mostrar todos si está vacío
-  if (q === '') {
+  console.log("BUSCANDO:", textoBusqueda);
+
+  // Si no hay texto mostrar todo
+  if (textoBusqueda === '') {
     renderMateriales(materiales);
     return;
   }
 
-  const filtered = materiales.filter(m => {
+  const resultados = materiales.filter(function(m) {
 
-    const texto = (
-      (m.material || '') + ' ' +
-      (m.tipo || '') + ' ' +
-      (m.medida || '') + ' ' +
-      (m.espesor || '')
-    )
-    .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .trim();
+    const textoMaterial =
+      (
+        (m.material || '') + ' ' +
+        (m.tipo || '') + ' ' +
+        (m.medida || '') + ' ' +
+        (m.espesor || '')
+      )
+      .toLowerCase();
 
-    return texto.includes(q);
+    return textoMaterial.includes(textoBusqueda);
 
   });
 
-  renderMateriales(filtered);
+  console.log("RESULTADOS:", resultados);
 
+  renderMateriales(resultados);
 }
 
 function selectMat(idx) {
@@ -578,18 +580,21 @@ function updateAlerta() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function () {
 
-  // Actualizar alertas
+  // ALERTAS
   document.getElementById('cantidad')
     .addEventListener('input', updateAlerta);
 
   document.getElementById('unidad')
     .addEventListener('change', updateAlerta);
 
-  // BUSCADOR EN TIEMPO REAL
-  document.getElementById('searchMat')
-    .addEventListener('input', filterMateriales);
+  // BUSCADOR
+  const buscador = document.getElementById('searchMat');
+
+  buscador.addEventListener('keyup', function () {
+    filterMateriales();
+  });
 
 });
 
